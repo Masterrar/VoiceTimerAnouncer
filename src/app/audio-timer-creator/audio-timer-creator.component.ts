@@ -9,11 +9,11 @@ import { buffer } from 'rxjs';
   styleUrls: ['./audio-timer-creator.component.css']
 })
 export class AudioTimerCreatorComponent implements OnInit {
-  audioBufferService:AudioBufferService;
+  audioBufferService: AudioBufferService;
   constructor(
     audioBufferService: AudioBufferService) {
-      this.audioBufferService = audioBufferService;
-     }
+    this.audioBufferService = audioBufferService;
+  }
 
   ngOnInit(): void {
 
@@ -49,46 +49,34 @@ export class AudioTimerCreatorComponent implements OnInit {
     source.start();
   }
 
-  async checkAudioPlay(): Promise<void>{
-    var timings = [5,11];
+  async checkAudioPlay(): Promise<void> {
+    var timings = [5, 11];
     var audioCtx = new AudioContext();
-
-    var myArrayBuffer = audioCtx.createBuffer(2, audioCtx.sampleRate * 60, audioCtx.sampleRate);
+    var myArrayBuffer = audioCtx.createBuffer(3, audioCtx.sampleRate * 60, audioCtx.sampleRate);
     var buffer = await this.audioBufferService.fetch("/assets/Start_1.0_6TTS_Наталья.wav");
     var channelData = buffer.getChannelData(0);
 
-    var result = null;
-    for (var channel = 0; channel < myArrayBuffer.numberOfChannels; channel++) {
-      // This gives us the actual array that contains the data
-      var i = 0;
-      var nowBuffering = myArrayBuffer.getChannelData(channel);
-      for (var i = 0; i < channelData.length; i++) {
-        // Math.random() is in [0; 1.0]
-        // audio needs to be in [-1.0; 1.0]
-        nowBuffering[i] = channelData[i];
-      }
-      for(var timing of timings){
-        var timing = timing * audioCtx.sampleRate;
-        for (var i = 0; i < channelData.length; i++) {
-          // Math.random() is in [0; 1.0]
-          // audio needs to be in [-1.0; 1.0]
-          nowBuffering[timing + i] = channelData[i];
-        }
-      }
-      result = nowBuffering;
-      
+    var channels = [myArrayBuffer.getChannelData(0),
+      myArrayBuffer.getChannelData(2)]
+      channels[0].set(channelData, 0);
+    var second = true;
+    for (var timing of timings) {
+      var ara = channels[+second];
+      second = !second;
+      var timing = timing * audioCtx.sampleRate;
+      ara.set(channelData, timing);
     }
-
 
     // var result = [];
     // result.push(channelData);
     // result.push(channelData);
     // var araarara = this.concat(result);
-    
-      // Get an AudioBufferSourceNode.
+
+    // Get an AudioBufferSourceNode.
     // This is the AudioNode to use when we want to play an AudioBuffer
     var source = audioCtx.createBufferSource();
-    myArrayBuffer.copyToChannel(result!,0,1);
+    myArrayBuffer.copyToChannel(channels[0]!, 0);
+    myArrayBuffer.copyToChannel(channels[1]!, 1);
     // set the buffer in the AudioBufferSourceNode
     source.buffer = myArrayBuffer
 
@@ -100,18 +88,18 @@ export class AudioTimerCreatorComponent implements OnInit {
     source.start();
   }
 
-   concat(arrays:Float32Array[]) {
+  concat(arrays: Float32Array[]) {
     if (!arrays.length) return null;
-  
+
     // находим общую длину переданных массивов
     let totalLength = arrays.reduce((acc, value) => acc + value.length, 0);
-  
+
     let result = new Float32Array(totalLength);
-  
+
     // копируем каждый из массивов в result
     // следующий массив копируется сразу после предыдущего
     let offset = 0;
-    for(let array of arrays) {
+    for (let array of arrays) {
       result.set(array, offset);
       offset += array.length;
     }
