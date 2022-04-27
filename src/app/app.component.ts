@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AudioTimerCreatorComponent } from './audio-timer-creator/audio-timer-creator.component';
 
 @Component({
   selector: 'app-root',

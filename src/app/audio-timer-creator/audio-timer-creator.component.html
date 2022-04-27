@@ -1,0 +1,6 @@
+<p>audio-timer-creator works!</p>
+<button id="Ara" #source="AudioNode" buffer="/assets/demo.wav" waAudioBufferSourceNode (click)="source.start()">
+    Play 
+    <ng-container waAudioDestinationNode></ng-container>
+</button>
+<button (click)="checkAudioPlay()">createTimer</button>
