@@ -60,7 +60,7 @@ export class AudioTimerCreatorComponent implements OnInit {
     channel.set(channelData, 0);
 
     for (var timing of timings) {
-      var timing = timing * audioCtx.sampleRate;
+      var timing = timing * audioCtx.sampleRate - buffer.length;
       channel.set(channelData, timing);
     }
 
@@ -70,7 +70,7 @@ export class AudioTimerCreatorComponent implements OnInit {
     var source = audioCtx.createBufferSource();
     myArrayBuffer.copyToChannel(channel!, 0);
     // set the buffer in the AudioBufferSourceNode
-    source.buffer = myArrayBuffer
+    source.buffer = myArrayBuffer;
 
     // connect the AudioBufferSourceNode to the
     // destination so we can hear the sound
