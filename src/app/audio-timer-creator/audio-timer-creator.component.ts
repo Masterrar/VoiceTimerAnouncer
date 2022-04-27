@@ -52,31 +52,23 @@ export class AudioTimerCreatorComponent implements OnInit {
   async checkAudioPlay(): Promise<void> {
     var timings = [5, 11];
     var audioCtx = new AudioContext();
-    var myArrayBuffer = audioCtx.createBuffer(3, audioCtx.sampleRate * 60, audioCtx.sampleRate);
+    var myArrayBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 60, audioCtx.sampleRate);
     var buffer = await this.audioBufferService.fetch("/assets/Start_1.0_6TTS_Наталья.wav");
     var channelData = buffer.getChannelData(0);
 
-    var channels = [myArrayBuffer.getChannelData(0),
-      myArrayBuffer.getChannelData(2)]
-      channels[0].set(channelData, 0);
-    var second = true;
+    var channel = myArrayBuffer.getChannelData(0);
+    channel.set(channelData, 0);
+
     for (var timing of timings) {
-      var ara = channels[+second];
-      second = !second;
       var timing = timing * audioCtx.sampleRate;
-      ara.set(channelData, timing);
+      channel.set(channelData, timing);
     }
 
-    // var result = [];
-    // result.push(channelData);
-    // result.push(channelData);
-    // var araarara = this.concat(result);
 
     // Get an AudioBufferSourceNode.
     // This is the AudioNode to use when we want to play an AudioBuffer
     var source = audioCtx.createBufferSource();
-    myArrayBuffer.copyToChannel(channels[0]!, 0);
-    myArrayBuffer.copyToChannel(channels[1]!, 1);
+    myArrayBuffer.copyToChannel(channel!, 0);
     // set the buffer in the AudioBufferSourceNode
     source.buffer = myArrayBuffer
 
